@@ -19,7 +19,6 @@ class _HomeState extends State<Home> {
   InterstitialAd? _interstitialAd;
 
   int num_of_attempt_load = 0;
-  int _numInterstitialLoadAttempts = 0;
   int maxFailedLoadAttempts = 3;
   bool _isBannerAdReady = false;
 
@@ -28,7 +27,7 @@ class _HomeState extends State<Home> {
     createInterad();
     showInterad();
     _initGoogleMobileAds();
-    _createInterstitialAd();
+    //_createInterstitialAd();
     _bannerAd = BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
       request: AdRequest(),
@@ -108,51 +107,6 @@ class _HomeState extends State<Home> {
     _interstitialAd = null;
   }
 
-  void _createInterstitialAd() {
-    InterstitialAd.load(
-        adUnitId: AdHelper.interstitialAdUnitId,
-        request: AdRequest(),
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (InterstitialAd ad) {
-            print('$ad loaded');
-            _interstitialAd = ad;
-            _numInterstitialLoadAttempts = 0;
-            _interstitialAd!.setImmersiveMode(true);
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            print('InterstitialAd failed to load: $error.');
-            _numInterstitialLoadAttempts += 1;
-            _interstitialAd = null;
-            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
-              _createInterstitialAd();
-            }
-          },
-        ));
-  }
-
-  void _showInterstitialAd() {
-    if (_interstitialAd == null) {
-      print('Warning: attempt to show interstitial before loaded.');
-      return;
-    }
-    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) =>
-          print('ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (InterstitialAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
-        ad.dispose();
-        _createInterstitialAd();
-      },
-      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-        _createInterstitialAd();
-      },
-    );
-    _interstitialAd!.show();
-    _interstitialAd = null;
-  }
-
   Widget _buildInputCodProduto() {
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -172,8 +126,6 @@ class _HomeState extends State<Home> {
       ),
       child: InkWell(
         onTap: () async {
-          _showInterstitialAd();
-
           final result = await Navigator.push(
             context,
             MaterialPageRoute(

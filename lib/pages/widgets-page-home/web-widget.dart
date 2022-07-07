@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:meu_qr_code/helpers/ad_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class WebWidget extends StatefulWidget {
   WebWidget(this.texto, {Key? key}) : super(key: key);
@@ -11,6 +12,68 @@ class WebWidget extends StatefulWidget {
 }
 
 class _WebWidgetState extends State<WebWidget> {
+  int maxFailedLoadAttempts = 3;
+  RewardedInterstitialAd? _rewardedInterstitialAd;
+  int _numRewardedInterstitialLoadAttempts = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _createRewardedInterstitialAd();
+  }
+
+  void _createRewardedInterstitialAd() {
+    RewardedInterstitialAd.load(
+        adUnitId: AdHelper.rewardedInterstitialAdUnitId,
+        request: AdRequest(),
+        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
+          onAdLoaded: (RewardedInterstitialAd ad) {
+            print('$ad loaded.');
+            _rewardedInterstitialAd = ad;
+            _numRewardedInterstitialLoadAttempts = 0;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('RewardedInterstitialAd failed to load: $error');
+            _rewardedInterstitialAd = null;
+            _numRewardedInterstitialLoadAttempts += 1;
+            if (_numRewardedInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              _createRewardedInterstitialAd();
+            }
+          },
+        ));
+  }
+
+  void _showRewardedInterstitialAd() {
+    if (_rewardedInterstitialAd == null) {
+      print('Warning: attempt to show rewarded interstitial before loaded.');
+      return;
+    }
+    _rewardedInterstitialAd!.fullScreenContentCallback =
+        FullScreenContentCallback(
+      onAdShowedFullScreenContent: (RewardedInterstitialAd ad) =>
+          print('$ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (RewardedInterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createRewardedInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent:
+          (RewardedInterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createRewardedInterstitialAd();
+      },
+    );
+
+    _rewardedInterstitialAd!.setImmersiveMode(true);
+    _rewardedInterstitialAd!.show(
+        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+      print('$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
+    });
+    _rewardedInterstitialAd = null;
+  }
+
   String? _url() {
     String toLaunch;
     try {
@@ -23,7 +86,7 @@ class _WebWidgetState extends State<WebWidget> {
 
   Future<void> _launchInBrowser() async {
     String? url = widget.texto;
-    if (url != null) {
+    if (url != null && url != '') {
       if (!await launchUrl(
         Uri.parse(_url() ?? ''),
         mode: LaunchMode.externalApplication,
@@ -49,13 +112,10 @@ class _WebWidgetState extends State<WebWidget> {
       ),
       child: InkWell(
         onTap: () {
-          // shouldDisplayTheAd();
-
           _launchInBrowser();
         },
         onLongPress: () {
-          // createInterad();
-          //  showInterad();
+          _showRewardedInterstitialAd();
         },
         child: Center(
           child: Column(

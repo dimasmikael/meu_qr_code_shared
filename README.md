@@ -72,5 +72,6 @@ flutter run
  
 # Autor
 Dimas Mikael
-www.linkedin.com/in/dimasmikaelsouza
+
+Linkedin: www.linkedin.com/in/dimasmikaelsouza
 ```

@@ -47,9 +47,7 @@ As seguintes ferramentas foram usadas na construção do projeto:
 
 Baixe ou clone este repositório usando o link abaixo:
 
-```
 https://github.com/dimasmikael/meu_qr_code_shared.git
-
 
 **Passo 2:**
 
@@ -66,12 +64,10 @@ flutter pub get
 **Passo 4:**
 Execute o seguinte comando no console para executar o projeto:
 flutter run
-
-```
-```
- 
+ ```
 # Autor
 Dimas Mikael
 
-Linkedin: www.linkedin.com/in/dimasmikaelsouza
+#Linkedin:
+www.linkedin.com/in/dimasmikaelsouza
 ```

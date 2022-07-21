@@ -15,8 +15,6 @@ No app são exibidos anúncios através do pacote google_mobile_ads.
 ## PlayStore
 https://play.google.com/store/apps/details?id=com.dmtech.meu_qr_code
 
-obs:Aguardando a playstore para subir a versão mais recente do app.
-
 # Tecnologias utilizadas
 
 As seguintes ferramentas foram usadas na construção do projeto:

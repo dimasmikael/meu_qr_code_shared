@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:meu_qr_code/components/qr-code/qr-code.widget.dart';
 import 'package:meu_qr_code/helpers/ad_helper.dart';
 import 'package:meu_qr_code/pages/widgets-page-home/compartilhar-widget.dart';
@@ -15,8 +15,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   String? texto = '';
-  //BannerAd? _bannerAd;
- // InterstitialAd? _interstitialAd;
+  BannerAd? _bannerAd;
+  InterstitialAd? _interstitialAd;
 
   int num_of_attempt_load = 0;
   int maxFailedLoadAttempts = 3;
@@ -24,88 +24,88 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    //createInterad();
-    //showInterad();
-   // _initGoogleMobileAds();
-    //_createInterstitialAd();
-    // _bannerAd = BannerAd(
-    //   adUnitId: AdHelper.bannerAdUnitId,
-    //   request: AdRequest(),
-    //   size: AdSize.banner,
-    //   listener: BannerAdListener(
-    //     onAdLoaded: (_) {
-    //       setState(
-    //         () {
-    //           _isBannerAdReady = true;
-    //         },
-    //       );
-    //     },
-    //     onAdFailedToLoad: (ad, err) {
-    //       print('Failed to load a banner ad: ${err.message}');
-    //       _isBannerAdReady = false;
-    //       ad.dispose();
-    //     },
-    //   ),
-    // );
+    createInterad();
+    showInterad();
+    _initGoogleMobileAds();
+   // _createInterstitialAd();
+    _bannerAd = BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(
+            () {
+              _isBannerAdReady = true;
+            },
+          );
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          _isBannerAdReady = false;
+          ad.dispose();
+        },
+      ),
+    );
 
-  //  _bannerAd?.load();
+    _bannerAd?.load();
     super.initState();
   }
 
   @override
   void dispose() {
-    //_bannerAd?.dispose();
+  _bannerAd?.dispose();
     super.dispose();
   }
 
-  // Future<InitializationStatus>? _initGoogleMobileAds() {
-  //   if (MobileAds.instance == null) {
-  //     return MobileAds.instance.initialize();
-  //   }
-  // }
+  Future<InitializationStatus>? _initGoogleMobileAds() {
+    if (MobileAds.instance == null) {
+      return MobileAds.instance.initialize();
+    }
+  }
 
-  // void createInterad() {
-  //   InterstitialAd.load(
-  //     adUnitId: AdHelper.interstitialAdUnitId,
-  //     request: AdRequest(),
-  //     adLoadCallback: InterstitialAdLoadCallback(
-  //       onAdLoaded: (InterstitialAd ad) {
-  //         _interstitialAd = ad;
-  //         num_of_attempt_load = 0;
-  //       },
-  //       onAdFailedToLoad: (LoadAdError error) {
-  //         num_of_attempt_load + 1;
-  //         _interstitialAd = null;
-  //
-  //         if (num_of_attempt_load <= 2) {
-  //           createInterad();
-  //         }
-  //       },
-  //     ),
-  //   );
-  // }
+  void createInterad() {
+    InterstitialAd.load(
+      adUnitId: AdHelper.interstitialAdUnitId,
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          _interstitialAd = ad;
+          num_of_attempt_load = 0;
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          num_of_attempt_load + 1;
+          _interstitialAd = null;
 
-  // void showInterad() {
-  //   if (_interstitialAd == null) {
-  //     return;
-  //   }
-  //   _interstitialAd?.fullScreenContentCallback = FullScreenContentCallback(
-  //     onAdShowedFullScreenContent: (InterstitialAd ad) {
-  //       print("add onAdshowedFullScreen");
-  //     },
-  //     onAdDismissedFullScreenContent: (InterstitialAd ad) {
-  //       print("add Dispose");
-  //       ad.dispose();
-  //     },
-  //     onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError adError) {
-  //       print('$ad OnAdFailed $adError');
-  //       ad.dispose();
-  //       createInterad();
-  //     },
-  //   );
-  //   _interstitialAd?.show();
-  //   _interstitialAd = null;
-  // }
+          if (num_of_attempt_load <= 2) {
+            createInterad();
+          }
+        },
+      ),
+    );
+  }
+
+  void showInterad() {
+    if (_interstitialAd == null) {
+      return;
+    }
+    _interstitialAd?.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) {
+        print("add onAdshowedFullScreen");
+      },
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        print("add Dispose");
+        ad.dispose();
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError adError) {
+        print('$ad OnAdFailed $adError');
+        ad.dispose();
+        createInterad();
+      },
+    );
+    _interstitialAd?.show();
+    _interstitialAd = null;
+  }
 
   Widget _buildInputCodProduto() {
     return Padding(
@@ -222,15 +222,15 @@ class _HomeState extends State<Home> {
                     alignment: Alignment.bottomCenter,
                     child: _gridviewCard(context),
                   ),
-                  // if (_isBannerAdReady)
-                  //   Align(
-                  //     alignment: Alignment.topCenter,
-                  //     child: Container(
-                  //       width: _bannerAd?.size.width.toDouble(),
-                  //       height: _bannerAd?.size.height.toDouble(),
-                  //       child: AdWidget(ad: _bannerAd!),
-                  //     ),
-                  //   ),
+                  if (_isBannerAdReady)
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Container(
+                        width: _bannerAd?.size.width.toDouble(),
+                        height: _bannerAd?.size.height.toDouble(),
+                        child: AdWidget(ad: _bannerAd!),
+                      ),
+                    ),
                 ],
               ),
             ),
